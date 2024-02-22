@@ -17,9 +17,8 @@ For first use you can simply run
 ``` 
 python main.py
 ``` 
-there is a default vehicle with its parameters in the [YAML](Audi_R8.yaml) file.
+there is a default vehicle with its parameters in the [YAML](bmw_m8.yaml) file.
 
-For validation some simple scenarios were run and the data is saved under the [exampledata](exampledata) folder.
 
 # Acknoledgment
 Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
