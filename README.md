@@ -39,3 +39,11 @@ Funded by the European Union (grant no. 101069576). Views and opinions expressed
 
 [REHEARSE Dataset](https://s3.ice.ri.se/roadview-WP3-Warwick/T3.2%20-%20Create%20Dataset/rehearse/index.html)
  - The REHEARSE dataset is a dataset made for sensor models creation and validation, made under extreme weather in controllable conditions.
+[Dataset Creator OSI](https://github.com/roadview-project/dataset_creator_OSI)
+- Creates Dataset in ASAM OSI format from rosbags.
+
+# Acknoledgment
+
+Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
+
+UK and Swiss participants in this project are supported by Innovate UK (contract no. 10045139) and the Swiss State Secretariat for Education, Research and Innovation (contract no. 22.00123) respectively.
