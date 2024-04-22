@@ -5,7 +5,6 @@ Vehicle Dynamic Model - Body Class
 
 Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
 """
-
 from vehicle_dynamics.utils.StaticParameters import StaticParameters
 from vehicle_dynamics.structures.StateVector import StateVector
 from vehicle_dynamics.structures.WheelHubForce import WheelHubForce
@@ -232,7 +231,7 @@ def main(static_parameters, current_state, data, logger, savefig=False):
     Fy_rl = data["Fy_rl"]
     Fy_rr = data["Fy_rr"]
 
-    time = data["car_time"]
+    time = data["time"]
     manoeuvre = Manoeuvre(steering, throttle, brake, time)
     logger.info("loaded SimulationData")
     simulation_range = range(0, len(time))
