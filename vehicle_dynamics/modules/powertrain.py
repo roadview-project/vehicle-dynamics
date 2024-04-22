@@ -1,22 +1,17 @@
-"""
-Vehicle Dynamic Model - Powertrain Class
+from vehicle_dynamics.utils.StaticParameters import StaticParameters
+from vehicle_dynamics.utils.LocalLogger import LocalLogger
+from vehicle_dynamics.utils.CurrentStates import CurrentStates
+from vehicle_dynamics.utils.import_data_CM import import_data_CM
+from vehicle_dynamics.utils.plot_function import plot_function
+from vehicle_dynamics.utils.StaticParameters import StaticParameters
 
-@author:   Maikol Funk Drechsler, Yuri Poledna
-
-Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
-"""
-from vehicle_dynamics.structures.StaticParameters import StaticParameters
-from vehicle_dynamics.structures.CurrentStates import CurrentStates
 from vehicle_dynamics.structures.OutputStates import OutputStates
 from vehicle_dynamics.structures.Manoeuvre import Manoeuvre
 
-from vehicle_dynamics.utils.plot_function import plot_function
-
-from vehicle_dynamics.modules.LocalLogger import LocalLogger
-
+import logging
 from scipy.interpolate import interp1d
-
 import numpy as np
+
 
 class Powertrain(object):
     """
@@ -130,10 +125,12 @@ class Powertrain(object):
 
         torque_converter_ratio = turbine_w / current_state.engine_w
 
+
         if torque_converter_ratio >= self.static_parameters.powertrain.torque_converter.lock_up_ratio:
             # Clutch Mode
             current_state.engine_w = turbine_w
             torque_converter_out = engine_torque
+        
         else:
             torque_converter_ratio = 0 if torque_converter_ratio < 0 else torque_converter_ratio
             # Torque Converter
@@ -147,12 +144,15 @@ class Powertrain(object):
             current_state.engine_w = (current_state.engine_w + engine_wdot * self.static_parameters.time_step)
 
         # Gillespie equation 2-7
-        traction_torque = torque_converter_out * final_ratio * self.static_parameters.powertrain.gearbox.efficiency - self.static_parameters.powertrain.gearbox.inertia * final_ratio ** 2 * np.mean(current_state.x_rr.pho_r_2dot) -\
-            self.static_parameters.powertrain.differential.driveshaft_inertia * self.static_parameters.powertrain.differential.ratio ** 2 * np.mean(current_state.x_rr.pho_r_2dot)
+        traction_torque = torque_converter_out * final_ratio * self.static_parameters.powertrain.gearbox.efficiency
+        
+        #if traction_torque > 5000.0:
+        #    traction_torque = 5000.0
 
         wheel_torque = traction_torque * self.static_parameters.powertrain.bias
-        if brake > 0:
-            wheel_torque = np.zeros(4)
+
+        #if brake > 0:
+        #    wheel_torque = np.zeros(4)
 
         # --------------------Break Torque -------------------------
         brake_torque = brake * self.static_parameters.brake.max_braking_torque * self.static_parameters.brake.brake_bias
@@ -176,3 +176,80 @@ class Powertrain(object):
 
         return current_state
 
+
+def main(static_parameters, current_state, data, logger, savefig=False):
+    import yaml
+    from tqdm import tqdm
+
+    steering = data["steering"]
+    throttle = data["throttle"]
+    brake = data["brake"]
+
+    time = data["time"]
+
+    points = len(brake)
+
+    manoeuvre = Manoeuvre(steering, throttle, brake, time)
+    logger.info("loaded SimulationData")
+
+
+    fl,rl,fr,rr = (data["v_wheel_fl"],
+                   data["v_wheel_fr"],
+                   data["v_wheel_rl"],
+                   data["v_wheel_rr"])
+    
+    simulation_range = range(0, len(time))
+
+    wheel_w_vel = np.array([[fl[i],rl[i],fr[i],rr[i]] for i in range(len(fl))])
+    vx = data ["Velocity_X"]
+    vy = data ["Velocity_Y"]
+    
+    yawrate = data["Yaw_Velocity"]
+
+    powertrain = Powertrain(static_parameters, logger)
+    test_function = powertrain.powertrain
+    output_states = OutputStates()
+
+    for i in tqdm(simulation_range):
+        current_state.x_a.vx = vx[i]
+        current_state.wheel_w_vel = wheel_w_vel[i]
+        try:
+            current_state = test_function(current_state, 
+                                          throttle = manoeuvre[i].throttle,
+                                          brake = manoeuvre[i].brake)
+            output_states.set_states(current_state)
+        except ValueError as e:
+            print(e)
+            output_states.padding(len(manoeuvre) - len(output_states))
+            plot_function(output_states, manoeuvre, sync_adma, sync_zgw, savefig, plot_type="powertrain", xlim=(-.25,sync_zgw[-1].timestamp-sync_zgw[0].timestamp + 0.25))
+            exit()
+
+
+    plot_function(output_states, manoeuvre, data, savefig, plot_type="powertrain", xlim=(-.25,time[-1]-time[0] + 0.25))
+
+
+if __name__ == '__main__':
+    import pickle
+
+    PATH_TO_DATA = "../../exampledata/Braking.pickle"
+    with open(PATH_TO_DATA,"rb")as handle:
+        data=pickle.load(handle)
+
+    from vehicle_dynamics.structures.StateVector import StateVector
+    from vehicle_dynamics.utils.StaticParameters import StaticParameters
+    static_parameters = StaticParameters("../../bmw_m8.yaml", freq = 1000)
+    
+    function_name = "Powertrain"
+    logger = LocalLogger(function_name).logger
+    logger.info("loaded current_state")
+    from vehicle_dynamics.utils.StaticParameters import StaticParameters
+    static_parameters = StaticParameters("../../BMW_M8.yaml")
+    from vehicle_dynamics.structures.StateVector import StateVector    
+
+    initial_state = StateVector(x = np.array( data["Rel_pos_x"][0]),
+                                y = np.array(data["Rel_pos_y"][0]),
+                                vx = np.array( data["Velocity_X"][0]),
+                                yaw = np.array( data["Yaw"][0]))    
+
+    current_state = CurrentStates(static_parameters, logger=logger,initial_state=initial_state)
+    main(static_parameters, current_state, data, logger, False)
