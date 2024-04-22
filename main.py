@@ -22,7 +22,7 @@ from collections import namedtuple
 
 import pickle
 
-with open("Braking.pickle","rb") as handle:
+with open("example_data/Braking.pickle","rb") as handle:
     data=pickle.load(handle)
 
 frequency = 1000

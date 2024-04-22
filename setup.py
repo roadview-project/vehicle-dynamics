@@ -20,7 +20,7 @@ setup(
         'scipy',
         "pyyaml",
         "tqdm",
-        "optimparallel"
+        "pandas",
     ],
 
     keywords=['python', 'vehicle dynamics'],
