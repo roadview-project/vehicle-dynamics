@@ -8,7 +8,7 @@ from vehicle_dynamics.structures.AngularWheelPosition import AngularWheelPositio
 
 from vehicle_dynamics.utils.import_data_CM import import_data_CM
 from vehicle_dynamics.utils.LocalLogger import LocalLogger
-from vehicle_dynamics.utils.SimulationData import SimulationData
+
 
 from scipy.interpolate import interp1d
 from numpy.linalg import inv

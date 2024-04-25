@@ -257,7 +257,7 @@ if __name__ == '__main__':
     logger = LocalLogger(function_name).logger
     logger.setLevel('INFO')
 
-    PATH_TO_DATA = "../../exampledata/Braking.pickle"
+    PATH_TO_DATA = "../../example_data/Braking.pickle"
     with open(PATH_TO_DATA,"rb")as handle:
         data=pickle.load(handle)
 

@@ -1,20 +1,13 @@
-"""
-Vehicle Dynamic Model - OutputStates Structure
-
-@author:   Maikol Funk Drechsler, Yuri Poledna
-
-Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
-"""
 from vehicle_dynamics.structures.TireForces import TireForces
 from vehicle_dynamics.structures.StateVector import StateVector
 from vehicle_dynamics.structures.Displacement import Displacement
-
+from vehicle_dynamics.structures.StrutForce import StrutForce
 from vehicle_dynamics.structures.WheelHubForce import WheelHubForce
 from vehicle_dynamics.structures.AngularWheelPosition import AngularWheelPosition
 from collections import namedtuple
 from copy import deepcopy, copy
 import numpy as np
-OutputState = namedtuple('OutputState', 'compiled_wheel_forces  delta displacement  engine_w f_zr gear powertrain_net_torque slip_x slip_y  sum_f_wheel wheel_w_vel x_a x_rf x_rr')
+OutputState = namedtuple('OutputState', 'compiled_wheel_forces  delta displacement  engine_w f_za f_zr gear powertrain_net_torque slip_x slip_y  sum_f_wheel wheel_w_vel x_a x_rf x_rr suspension_force')
 
 
 class OutputStates(object):
@@ -27,6 +20,7 @@ class OutputStates(object):
         self.delta = []
         self.displacement = []
         self.engine_w = []
+        self.f_za = []
         self.f_zr = []
         self.gear = []
         self.get_data = []
@@ -38,6 +32,7 @@ class OutputStates(object):
         self.x_a = []
         self.x_rf = []
         self.x_rr = []
+        self.suspension_force = []
 
     def __len__(self):
         return len(self.compiled_wheel_forces)
@@ -47,6 +42,7 @@ class OutputStates(object):
         self.delta.append(copy(current_states.delta))
         self.displacement.append(copy(current_states.displacement))
         self.engine_w.append(copy(current_states.engine_w))
+        self.f_za.append(deepcopy(current_states.f_za))
         self.f_zr.append(deepcopy(current_states.f_zr))
         self.gear.append(copy(current_states.gear))
         self.powertrain_net_torque.append(copy(current_states.powertrain_net_torque))
@@ -57,12 +53,14 @@ class OutputStates(object):
         self.x_a.append(deepcopy(current_states.x_a))
         self.x_rf.append(deepcopy(current_states.x_rf))
         self.x_rr.append(deepcopy(current_states.x_rr))
+        self.suspension_force.append(deepcopy(current_states.suspension_force))
 
     def __getitem__(self, items):
         return OutputState(self.compiled_wheel_forces,
                            self.delta,
                            self.displacement,
                            self.engine_w,
+                           self.f_za,
                            self.f_zr,
                            self.gear,
                            self.powertrain_net_torque,
@@ -72,13 +70,15 @@ class OutputStates(object):
                            self.wheel_w_vel,
                            self.x_a,
                            self.x_rf,
-                           self.x_rr)
+                           self.x_rr, 
+                           self.suspension_force)
 
     def padding(self, value):
         self.compiled_wheel_forces.extend([self.compiled_wheel_forces[-1]] * value) 
         self.delta.extend([self.delta[-1]] * value) 
         self.displacement.extend([self.displacement[-1]] * value) 
         self.engine_w.extend([self.engine_w[-1]] * value) 
+        self.f_za.extend([self.f_za[-1]] * value) 
         self.f_zr.extend([self.f_zr[-1]] * value) 
         self.gear.extend([self.gear[-1]] * value) 
         self.powertrain_net_torque.extend([self.powertrain_net_torque[-1]] * value) 
@@ -89,4 +89,5 @@ class OutputStates(object):
         self.x_a.extend([self.x_a[-1]] * value) 
         self.x_rf.extend([self.x_rf[-1]] * value) 
         self.x_rr.extend([self.x_rr[-1]] * value) 
+        self.suspension_force.extend([self.suspension_force[-1]] * value) 
         pass

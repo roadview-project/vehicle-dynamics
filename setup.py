@@ -21,6 +21,7 @@ setup(
         "pyyaml",
         "tqdm",
         "pandas",
+        "munch",
     ],
 
     keywords=['python', 'vehicle dynamics'],

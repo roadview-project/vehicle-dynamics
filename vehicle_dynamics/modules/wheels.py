@@ -1,22 +1,14 @@
-"""
-Vehicle Dynamic Model - wheels Class
-
-@author:   Maikol Funk Drechsler, Yuri Poledna
-
-Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
-"""
-
-from vehicle_dynamics.structures.StaticParameters import StaticParameters
+from vehicle_dynamics.utils.StaticParameters import StaticParameters
 from vehicle_dynamics.structures.StateVector import StateVector
-from vehicle_dynamics.structures.CurrentStates import CurrentStates
-
-from vehicle_dynamics.modules.LocalLogger import LocalLogger
-
+from vehicle_dynamics.utils.CurrentStates import CurrentStates
+from vehicle_dynamics.utils.import_data_CM import import_data_CM
+from vehicle_dynamics.utils.LocalLogger import LocalLogger
 from vehicle_dynamics.utils.plot_function import plot_function
-
 from copy import copy
-
+import matplotlib.pyplot as plt
 import numpy as np
+import logging
+import yaml 
 
 
 class Wheels:
@@ -59,7 +51,7 @@ class Wheels:
             3. slip_y
 
         """
-        # Convert Steering input [-1,1] to whell steering (delta)
+        # Convert Steering input [-1,1] to wheel steering (delta)
         steering_angle = steering_input * self.static_parameters.steering.maximum_steering_angle 
         current_state.delta = steering_angle / self.static_parameters.steering.ratio
 
@@ -92,15 +84,17 @@ class Wheels:
         current_state.x_rf.fx = current_state.f_zr.wheel_load_z * self.static_parameters.tire.longitudinal.peak_friction * np.sin(self.static_parameters.tire.longitudinal.shape_factor * np.arctan((self.static_parameters.tire.longitudinal.slip_stiffness / (self.static_parameters.tire.longitudinal.shape_factor * self.static_parameters.tire.longitudinal.peak_friction)) * current_state.slip_x))
         current_state.x_rf.fy = current_state.f_zr.wheel_load_z * self.static_parameters.tire.lateral.peak_friction * np.sin(self.static_parameters.tire.lateral.shape_factor * np.arctan((self.static_parameters.tire.lateral.cornering_coefficient / (self.static_parameters.tire.lateral.shape_factor * self.static_parameters.tire.lateral.peak_friction)) * current_state.slip_y))
 
+
+
         current_state.compiled_wheel_forces = np.array([current_state.x_rf.fx, current_state.x_rf.fy, current_state.f_zr.wheel_load_z])
 
         delta = np.array([current_state.delta, 0.0, current_state.delta, 0.0])  # FL, RL, FR, RR
-
         for i in range(4):
-            current_state.x_rf.wheel_forces_transformed_force2vehicle_sys[0, i] = current_state.x_rf.fx[i] * np.cos(delta[i]) + current_state.x_rf.fy[i] * np.sin(delta[i])
+            current_state.x_rf.wheel_forces_transformed_force2vehicle_sys[0, i] = current_state.x_rf.fx[i] * np.cos(delta[i]) - current_state.x_rf.fy[i] * np.sin(delta[i])
             current_state.x_rf.wheel_forces_transformed_force2vehicle_sys[1, i] = current_state.x_rf.fy[i] * np.cos(delta[i]) + current_state.x_rf.fx[i] * np.sin(delta[i]) 
 
-        current_state.x_rr.pho_r_2dot = (current_state.powertrain_net_torque - (current_state.x_rf.fx * self.static_parameters.tire.dynamic_radius)) / (self.static_parameters.tire.inertia) - self.static_parameters.tire.rolling_resistance_coefficient*current_state.wheel_w_vel
+        final_ratio = self.static_parameters.powertrain.gearbox.gear_ratio[current_state.gear] * self.static_parameters.powertrain.differential.ratio
+        current_state.x_rr.pho_r_2dot = (current_state.powertrain_net_torque - current_state.x_rf.fx * self.static_parameters.tire.dynamic_radius - self.static_parameters.tire.rolling_resistance_coefficient*current_state.f_zr.wheel_load_z) / (self.static_parameters.tire.inertia + self.static_parameters.powertrain.gearbox.inertia * final_ratio ** 2 + self.static_parameters.powertrain.differential.driveshaft_inertia * self.static_parameters.powertrain.differential.ratio ** 2)
         current_state.wheel_w_vel = current_state.wheel_w_vel + (current_state.x_rr.pho_r_2dot * self.static_parameters.time_step)  # rad/s      
         for i in range(len(current_state.wheel_w_vel)):
             if current_state.wheel_w_vel[i] <= 0.0:

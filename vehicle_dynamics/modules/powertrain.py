@@ -231,7 +231,7 @@ def main(static_parameters, current_state, data, logger, savefig=False):
 if __name__ == '__main__':
     import pickle
 
-    PATH_TO_DATA = "../../exampledata/Braking.pickle"
+    PATH_TO_DATA = "../../example_data/Braking.pickle"
     with open(PATH_TO_DATA,"rb")as handle:
         data=pickle.load(handle)
 

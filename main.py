@@ -39,10 +39,10 @@ time = data["time"]
 manoeuvre_M8 = Manoeuvre(steering, throttle, brake, time)
 
 output_states = OutputStates()
-initial_state = StateVector(x = np.array( data["Rel_pos_x"][0]),
+initial_state = StateVector(x = np.array(data["Rel_pos_x"][0]),
                             y = np.array(data["Rel_pos_y"][0]),
-                            vx = np.array( data["Velocity_X"][0]),
-                            yaw = np.array( data["Yaw"][0]))
+                            vx = np.array(data["Velocity_X"][0]),
+                            yaw = np.array(data["Yaw"][0]))
 
 car_parameters_path = "bmw_m8.yaml"
 
@@ -50,8 +50,9 @@ vehicle_dynamics = VehicleDynamics(initial_state = initial_state,
                                    initial_gear = 1, 
                                    frequency = frequency, 
                                    car_parameters_path = car_parameters_path)
+simulation_range = range(0, len(time))
 
-for i in tqdm.tqdm(range(points)):
+for i in tqdm.tqdm(simulation_range):
     try:
         output_states.set_states(vehicle_dynamics.tick(*manoeuvre_M8[i]))
     except ValueError as e:
