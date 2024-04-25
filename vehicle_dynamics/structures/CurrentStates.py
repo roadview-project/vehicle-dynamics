@@ -6,15 +6,16 @@ Vehicle Dynamic Model - CurrentStates Class
 Funded by the European Union (grant no. 101069576). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
 """
 
-from vehicle_dynamics.structures.StaticParameters import StaticParameters
+from vehicle_dynamics.utils.StaticParameters import StaticParameters
 from vehicle_dynamics.structures.TireForces import TireForces
 from vehicle_dynamics.structures.StateVector import StateVector
 from vehicle_dynamics.structures.Displacement import Displacement
-
+from vehicle_dynamics.structures.StrutForce import StrutForce
 from vehicle_dynamics.structures.WheelHubForce import WheelHubForce
 from vehicle_dynamics.structures.AngularWheelPosition import AngularWheelPosition
 
-from vehicle_dynamics.modules.LocalLogger import LocalLogger
+from vehicle_dynamics.utils.import_data_CM import import_data_CM
+from vehicle_dynamics.utils.LocalLogger import LocalLogger
 
 from scipy.interpolate import interp1d
 from numpy.linalg import inv
@@ -104,6 +105,11 @@ class CurrentStates(object):
         longitudinal_force_transfer = np.array([-1, 1, -1, 1]) * (np.sum(sprung_mass) * self.x_a.acc_x * static_parameters.suspension.pitch_centre_height / (2 * static_parameters.wheel_base))
 
         self.f_zr.wheel_load_z = sprung_mass * static_parameters.gravity + suspension_force + longitudinal_force_transfer + lateral_force_transfer
+
+        self.f_za = StrutForce(f_za = static_parameters.body.mass * static_parameters.gravity * static_parameters.wd, 
+                               f_za_dot = np.zeros(4), 
+                               spring_force = (static_parameters.body.mass * np.array([static_parameters.body.lr * static_parameters.body.wr, static_parameters.body.lf * static_parameters.body.wr, static_parameters.body.lr * static_parameters.body.wl, static_parameters.body.lf * static_parameters.body.wl]) / ((static_parameters.body.lr + static_parameters.body.lf) * (static_parameters.body.wl + static_parameters.body.wr)) * static_parameters.gravity).reshape(-1, 1), 
+                               dumper_force = np.zeros((4, 1), dtype=float))
 
         self.x_rf.wheel_forces_transformed_force2vehicle_sys[2, :] = self.f_zr.wheel_load_z
 
@@ -293,13 +299,13 @@ class CurrentStates(object):
 
 
 def main():
-    from vehicle_dynamics.modules.LocalLogger import LocalLogger
-    from vehicle_dynamics.structures.StaticParameters import StaticParameters
+    from vehicle_dynamics.utils.LocalLogger import LocalLogger
+    from vehicle_dynamics.utils.StaticParameters import StaticParameters
     test_function = CurrentStates
     function_name = test_function.__name__
     logger = LocalLogger(function_name).logger
     logger.setLevel('INFO')
-    static_parameters = StaticParameters("../../Audi_r8.yaml")
+    static_parameters = StaticParameters("../../bmw_m8.yaml")
     parameters = CurrentStates(static_parameters, logger=logger)
     pass
 
