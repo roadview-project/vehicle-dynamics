@@ -26,16 +26,20 @@ UK participants in this project are co-funded by Innovate UK under contract no.1
 Swiss participants in this project are co-funded by the Swiss State Secretariat for Education, Research and Innovation (SERI) under contract no. 22.00123.
 
 
-# Citation (TODO)
+# Citation 
+Please cite the following work when publishing:
 ```
-@Journal{
-	author = {Poledna,Yuri and Drechsler, Maikol Funk and Kharrazi, Sogol and Hjort, Mattias and Huber, Werner},
-	booktitle = {},
-	year = {},
-	volume = {},
-	number = {},
-	pages = {},
-	doi = {},
+@INPROCEEDINGS{10786416,
+  author={Drechsler, Maikol Funk and Poledna, Yuri and Hjort, Mattias and Kharrazi, Sogol and Huber, Werner},
+  booktitle={2024 IEEE International Automated Vehicle Validation Conference (IAVVC)}, 
+  title={Vehicle Dynamics Parameter Estimation Methodology for Virtual Automated Driving Testing}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-7},
+  keywords={Weight measurement;Parameter estimation;Heuristic algorithms;Torque converters;Process control;Optimization methods;Position measurement;Tires;Vehicle dynamics;Testing;Adverse Weather;Automated Driving Vehicles;Vehicle Dynamics Model},
+  doi={10.1109/IAVVC63304.2024.10786416}}
+
 }
 ```
 # Other ROADVIEW-Project Works:
