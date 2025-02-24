@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.1' 
+VERSION = '1.0.0' 
 DESCRIPTION = 'vehicle_dynamics'
 LONG_DESCRIPTION = 'package that calculates the vehicle dynamics'
 
@@ -22,6 +22,7 @@ setup(
         "tqdm",
         "pandas",
         "munch",
+        "urllib",
     ],
 
     keywords=['python', 'vehicle dynamics'],

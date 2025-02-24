@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vehicle_dynamics"
+version = "1.0.0"
+description = "Python Package that makes Vehicle Dynamics Calculation for cars. "
+authors = [{name = "Yuri Poledna", email = "yuri.poledna@carissma.eu"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    'numpy',
+    'matplotlib',
+    'scipy',
+    "pyyaml",
+    "tqdm",
+    "pandas",
+    "munch", 
+    "urllib"
+]
+
+[project.urls]
+Homepage = "https://github.com/roadview-project/vehicle-dynamics"
+Repository = "https://github.com/roadview-project/vehicle-dynamics"
