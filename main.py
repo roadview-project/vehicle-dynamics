@@ -24,7 +24,7 @@ import pickle
 import os
 import urllib.request
 file_path = "example_data/Braking.pickle"
-url = "https://github.com/roadview-project/vehicle-dynamics/blob/main/example_data/Braking.pickle"
+url = "https://github.com/roadview-project/vehicle-dynamics/raw/refs/heads/main/example_data/Braking.pickle"
 urllib.request.urlretrieve(url, "Braking.pickle")
 os.makedirs(os.path.dirname(file_path), exist_ok=True)
 

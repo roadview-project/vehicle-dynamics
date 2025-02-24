@@ -23,19 +23,27 @@ from collections import namedtuple
 import pickle
 import os
 import urllib.request
-file_path = "example_data/Braking.pickle"
-url = "https://github.com/roadview-project/vehicle-dynamics/blob/main/example_data/Braking.pickle"
-urllib.request.urlretrieve(url, "Braking.pickle")
-os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-if not os.path.exists(file_path):
-    print(f"{file_path} not found. Downloading from {url}...")
-    urllib.request.urlretrieve(url, file_path)
-    print("Download complete!")
-else:
-    print(f"{file_path} already exists. Skipping download.")
+def check_file_or_download(file_path,url):    
+    if not os.path.exists(file_path):
+        print(f"{file_path} not found. Downloading from {url}...")
+        urllib.request.urlretrieve(url, file_path)
+        print("Download complete!")
+    else:
+        print(f"{file_path} already exists. Skipping download.")
 
-with open(file_path,"rb") as handle:
+file_path_example_data = "example_data/Braking.pickle"
+url = "https://github.com/roadview-project/vehicle-dynamics/raw/refs/heads/main/example_data/Braking.pickle"
+
+os.makedirs(os.path.dirname(file_path_example_data), exist_ok=True)
+check_file_or_download(file_path_example_data,url)
+
+url = "https://raw.githubusercontent.com/roadview-project/vehicle-dynamics/refs/heads/main/bmw_m8.yaml"
+file_path = "bmw_m8.yaml"
+check_file_or_download(file_path,url)
+
+
+with open(file_path_example_data,"rb") as handle:
     data=pickle.load(handle)
 
 frequency = 1000
