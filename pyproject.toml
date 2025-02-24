@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vehicle_dynamics"
-version = "1.0.0"
+version = "1.0.6"
 description = "Python Package that makes Vehicle Dynamics Calculation for cars. "
 authors = [{name = "Yuri Poledna", email = "yuri.poledna@carissma.eu"}]
 license = {text = "MIT"}
@@ -18,7 +18,6 @@ dependencies = [
     "tqdm",
     "pandas",
     "munch", 
-    "urllib"
 ]
 
 [project.urls]
